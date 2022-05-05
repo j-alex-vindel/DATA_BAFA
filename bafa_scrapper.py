@@ -1,5 +1,3 @@
-from logging.config import DEFAULT_LOGGING_CONFIG_PORT
-from wsgiref import headers
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
