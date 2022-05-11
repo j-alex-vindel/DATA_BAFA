@@ -6,7 +6,8 @@ import pandas as pd
 
 
 def w_scrap(url):
-    html_text = requests.get(url).text
+    response = requests.get(url)
+    html_text = response.text
     soup = BeautifulSoup(html_text,'html.parser')
     # --- Returns a list of lists with the information of each game
     # [['date \r\n\t    \t14:00',home_team,score,away_team],....]
@@ -36,8 +37,24 @@ def w_scrap(url):
         games['Home_score'].append(score_home)
         games['Away_score'].append(score_away)
         games['Division'].append(division)
+    response.close()
+    return games
+
+def savetable(tables,name):
     
-    df = pd.DataFrame.from_dict(games)
+    base_dict = tables[0]
+
+    for index,d in enumerate(tables):
+        if index != 0:
+            for name, values in d.items():
+                for value in values:
+                    base_dict[name].append(value)
+                    
+    df = pd.DataFrame.from_dict(base_dict)
+    
+    df.to_csv('%s.csv'%name,header=True)
+    
+    return f"Table saved!"
 
 def addres_finder(sop):
     postcode = sop.address.find('span',attrs={'class':'uppercase'}).text
