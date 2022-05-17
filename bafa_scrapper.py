@@ -3,6 +3,12 @@ from wsgiref import headers
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import re
+from selenium import webdriver
+import chromedriver_autoinstaller
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
+chromedriver_autoinstaller.install()
 
 
 def table_scrap(url):
