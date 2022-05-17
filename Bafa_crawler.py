@@ -26,9 +26,9 @@ for name in master_links.keys():
         division_list.append(table2)
 
     division_df = pd.concat(division_list,ignore_index=True)
-    division_df.to_csv('%s.csv'%name,header=True)
+    division_df.to_csv('BAFA_2019_%s.csv'%name,header=True)
     
     master_list.append(division_df)
     
 master_df = pd.concat(master_list,ignore_index=True)
-master_df.to_csv('BAFA_2019.csv',header=True)
+master_df.to_csv('BAFA_2019_all.csv',header=True)
