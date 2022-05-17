@@ -43,8 +43,8 @@ def table_scrap(url):
                 score_away - 'A'
         else:
             real_score = re.findall(r"\d+",game[2])
-            score_home = real_score[0]
-            score_away = real_score[1]
+            score_home = int(real_score[0])
+            score_away = int(real_score[1])
             
         games['Game_Date'].append(game_date)
         games['Game_Time'].append(game_time)
