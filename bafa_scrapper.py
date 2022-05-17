@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 
-def w_scrap(url):
+def table_scrap(url):
     response = requests.get(url)
     html_text = response.text
     soup = BeautifulSoup(html_text,'html.parser')
@@ -66,6 +66,51 @@ def w_scrap(url):
     
 #     return f"Table saved!"
 
+def division_names(base_url):
+ 
+    r1 = requests.get(base_url)
+    soup = BeautifulSoup(r1.text,'html.parser')
+
+    divisions = []
+    for title in soup.find('section',attrs={'id':'match-groups-section'}).find_all('a'):
+        # print(f"Division : {title.text.strip()}")
+        divisions.append(title.text.strip())
+    r1.close()
+    return divisions
+
+def table_links(divisions,results_url):
+    master_links = {}
+    for division in divisions:
+        print("="*20,f"{division}","="*20)
+        driver = webdriver.Chrome()
+        driver.get(results_url)
+        division_dropdown =  driver.find_element(By.NAME,"fixtureGroupPageContent.filterFixtureGroupKey")
+        try:
+            dd = Select(division_dropdown)
+            dd.select_by_visible_text(division)
+            viewresults = driver.find_element(By.XPATH,"//a[normalize-space()='View All Results']")
+            viewresults.click() 
+            link1 = driver.current_url
+            master_links[division] = {'1':link1,'2':None}
+            print(f" -> Table 1")
+            try:
+                page2 = driver.find_element(By.XPATH,"//a[normalize-space()='2']")
+                page2.click()
+                link2 = driver.current_url
+                master_links[division].update({'2':link2})
+
+                print(f"-> Table 2")
+            except:
+                print(f"-> Division: {division} only has one table")
+        
+        except:
+            print(f"!!!! Division: {division} Not played in 2019 !!!!")
+    driver.close()
+    return master_links
+
+
+
+
 def addres_finder(sop):
     postcode = sop.address.find('span',attrs={'class':'uppercase'}).text
     name     = sop.h2.text
@@ -77,4 +122,4 @@ def addres_finder(sop):
         team_name = name[1:] 
     
     return postcode, team_name
-    
+  
