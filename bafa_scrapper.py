@@ -56,22 +56,6 @@ def table_scrap(url):
     response.close()
     return games
 
-# def savetable(tables,name):
-    
-#     base_dict = tables[0]
-
-#     for index,d in enumerate(tables):
-#         if index != 0:
-#             for name, values in d.items():
-#                 for value in values:
-#                     base_dict[name].append(value)
-                    
-#     df = pd.DataFrame.from_dict(base_dict)
-    
-#     df.to_csv('%s.csv'%name,header=True)
-    
-#     return f"Table saved!"
-
 def division_names(base_url):
  
     r1 = requests.get(base_url)
@@ -113,9 +97,6 @@ def table_links(divisions,results_url):
             print(f"!!!! Division: {division} Not played in 2019 !!!!")
     driver.close()
     return master_links
-
-
-
 
 def addres_finder(sop):
     postcode = sop.address.find('span',attrs={'class':'uppercase'}).text
