@@ -24,12 +24,22 @@ def w_scrap(url):
     games = {'Game_Date':[],'Game_Time':[],'Home_Team':[],'Away_Team':[],'Home_Score':[],
             'Away_score':[],'Division':[]}
     for game,entry in enumerate(data):
-        game_date = data[game][0][:8]
-        game_time = data[game][0][-5:]
-        home = data[game][1]
-        away = data[game][3]
-        score_home = data[game][2].split('-')[0].rstrip()
-        score_away = data[game][2].split('-')[1].lstrip()
+        game_date = re.findall("[0-9]{2}/[0-9]{2}/[0-9]{2}",game[0])
+        game_time = re.findall("[0-9]{2}:[0-9]{2}",game[0])
+        home = game[1]
+        away = game[3]
+        if game[2][0] not in [str(i) for i in range(10)]:
+            if game[2][0] == 'A':
+                score_home = 'A'
+                score_away = 'W'
+            elif game[2][0] == 'H':
+                score_home = 'W'
+                score_away - 'A'
+        else:
+            real_score = re.findall(r"\d+",game[2])
+            score_home = real_score[0]
+            score_away = real_score[1]
+            
         games['Game_Date'].append(game_date)
         games['Game_Time'].append(game_time)
         games['Home_team'].append(home)
@@ -40,21 +50,21 @@ def w_scrap(url):
     response.close()
     return games
 
-def savetable(tables,name):
+# def savetable(tables,name):
     
-    base_dict = tables[0]
+#     base_dict = tables[0]
 
-    for index,d in enumerate(tables):
-        if index != 0:
-            for name, values in d.items():
-                for value in values:
-                    base_dict[name].append(value)
+#     for index,d in enumerate(tables):
+#         if index != 0:
+#             for name, values in d.items():
+#                 for value in values:
+#                     base_dict[name].append(value)
                     
-    df = pd.DataFrame.from_dict(base_dict)
+#     df = pd.DataFrame.from_dict(base_dict)
     
-    df.to_csv('%s.csv'%name,header=True)
+#     df.to_csv('%s.csv'%name,header=True)
     
-    return f"Table saved!"
+#     return f"Table saved!"
 
 def addres_finder(sop):
     postcode = sop.address.find('span',attrs={'class':'uppercase'}).text
