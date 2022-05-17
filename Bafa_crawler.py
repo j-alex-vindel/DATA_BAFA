@@ -12,16 +12,23 @@ divisions = division_names(base)
 
 master_links = table_links(divisions, results_url)
 
-df = pd.DataFrame(columns=['Game_Date','Game_Time','Home_Team','Away_Team','Home_Score','Away_Score','Division'])
+master_list = []
+
 for name in master_links.keys():
+    division_list = []
+    print(f" -> Division {name}")
     table_url = master_links[name]['1']
     table1 = table_scrap(table_url)
-    print(f"->> Dvision {name}")
-    print('->',table1)
-    df.append(table1,ignore_index=True)
+    division_list.append(table1)
     if master_links[name]['2'] != None:
         table2_url = master_links[name]['2']
         table2 = table_scrap(table2_url)
-        print('->',table2)
-        df.append(table2,ignore_index=True)
-        print(f"->> {table_url},'\n', ->>{table2_url}")
+        division_list.append(table2)
+
+    division_df = pd.concat(division_list,ignore_index=True)
+    division_df.to_csv('%s.csv'%name,header=True)
+    
+    master_list.append(division_df)
+    
+master_df = pd.concat(master_list,ignore_index=True)
+master_df.to_csv('BAFA_2019.csv',header=True)
