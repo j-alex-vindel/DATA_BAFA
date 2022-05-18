@@ -110,3 +110,33 @@ def addres_finder(sop):
     
     return postcode, team_name
   
+def distance_crawler(pairs,postcodedf):
+    
+    team_home,team_away = pairs
+    
+    p1 = postcodedf['PostCode'][postcodedf.Team_name == team_home].tolist()[0]
+    p2 = postcodedf['PostCode'][postcodedf.Team_name == team_away].tolist()[0]
+    
+    driver = webdriver.Chrome()
+    driver.get("http://www.postcode-distance.com/distance-between-postcodes")
+    postcode1 = driver.find_element(By.XPATH,"//input[@id='zipcode1']")
+    postcode1.send_keys(p1) # this one will change the potscode 1
+
+    postcode2 = driver.find_element(By.XPATH,"//input[@id='zipcode2']")
+    postcode2.send_keys(p2)
+
+    distance_dd = driver.find_element(By.XPATH,"//select[@id='unit']")
+
+    km_dd = Select(distance_dd)
+    km_dd.select_by_visible_text('in km')
+
+    driver.find_element(By.XPATH,"//input[@value='Calculate...']").click()
+    driver.switch_to.frame('map')
+    result  = driver.find_element(By.XPATH,"//div[@id='outputDiv']").get_attribute('innerText').split()
+
+    km_road = result[2]
+    km_bee =  result[6]
+
+    driver.close()
+
+    return {(pairs):{'road':km_road,'bee':km_bee}} 
