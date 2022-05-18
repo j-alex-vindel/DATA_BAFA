@@ -134,8 +134,8 @@ def distance_crawler(pairs,postcodedf):
     driver.switch_to.frame('map')
     result  = driver.find_element(By.XPATH,"//div[@id='outputDiv']").get_attribute('innerText').split()
 
-    km_road = result[2]
-    km_bee =  result[6]
+    km_road = int(result[2])
+    km_bee =  int(result[6])
 
     driver.close()
 
