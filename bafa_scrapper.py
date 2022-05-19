@@ -113,14 +113,16 @@ def addres_finder(sop):
 def distance_crawler(pairs,postcodedf):
     
     team_home,team_away = pairs
+
+    print(f"Distance Between: {team_home} & {team_away}")
     
     p1 = postcodedf['PostCode'][postcodedf.Team_name == team_home].tolist()[0]
     p2 = postcodedf['PostCode'][postcodedf.Team_name == team_away].tolist()[0]
-    
+    print(f"D: {p1} --> {p2}")
     driver = webdriver.Chrome()
     driver.get("http://www.postcode-distance.com/distance-between-postcodes")
     postcode1 = driver.find_element(By.XPATH,"//input[@id='zipcode1']")
-    postcode1.send_keys(p1) # this one will change the potscode 1
+    postcode1.send_keys(p1) 
 
     postcode2 = driver.find_element(By.XPATH,"//input[@id='zipcode2']")
     postcode2.send_keys(p2)
@@ -129,14 +131,33 @@ def distance_crawler(pairs,postcodedf):
 
     km_dd = Select(distance_dd)
     km_dd.select_by_visible_text('in km')
-
+    time.sleep(5)
     driver.find_element(By.XPATH,"//input[@value='Calculate...']").click()
-    driver.switch_to.frame('map')
-    result  = driver.find_element(By.XPATH,"//div[@id='outputDiv']").get_attribute('innerText').split()
+    time.sleep(5)
+    if WebDriverWait(driver, 50).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,"//iframe[@name='map']"))):
+        # driver.switch_to.frame("map")
+        time.sleep(5)
+        result = driver.find_element(By.XPATH,"//div[@id='outputDiv']").get_attribute('innerText').split()
+        # print(result)
+        km_road = int(result[2])
+        km_bee =  int(result[6])
+    print(f"By Road: {km_road}; Beeline: {km_bee}")
+    
+    driver.switch_to.default_content()
 
-    km_road = int(result[2])
-    km_bee =  int(result[6])
+    driver.quit()
 
-    driver.close()
+    return pd.DataFrame.from_dict({'Teams':[pairs],'Road_km':km_road,'Bee_km':km_bee}) 
 
-    return pd.DataFrame.from_dict({'Teams':[pairs],'Road_km':km_road,'Bee_km':km_bee})
+def division_distance(name):
+    df = pd.read_csv('BAFA_2019_%s.csv'%name,index_col=False)
+    postcode = pd.read_csv('BAFA_2019_Team_Venues.csv',index_col=False)
+    teams = list(df['Home_Team'].unique())
+    pairs = list(combinations(teams,2))
+    master_dfs = []
+    for pair in pairs:
+        pairdf = distance_crawler(pair,postcode)
+        master_dfs.append(pairdf)
+    distance_df = pd.concat(master_dfs,ignore_index=True)
+    distance_df.to_csv("BAFA_2019_D_%s.csv"%name,header=True)
+    print(f"Division {name} saved (processed)!")
