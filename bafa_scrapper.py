@@ -116,8 +116,8 @@ def distance_crawler(pairs,postcodedf):
 
     print(f"Distance Between: {team_home} & {team_away}")
     
-    p1 = postcodedf['PostCode'][postcodedf.Team_name == team_home].tolist()[0]
-    p2 = postcodedf['PostCode'][postcodedf.Team_name == team_away].tolist()[0]
+    p1 = postcodedf['PostCode'][postcodedf.Team_name.str.contains(team_home)].tolist()[0]
+    p2 = postcodedf['PostCode'][postcodedf.Team_name.str.contains(team_away)].tolist()[0]
     print(f"D: {p1} --> {p2}")
     driver = webdriver.Chrome()
     driver.get("http://www.postcode-distance.com/distance-between-postcodes")
