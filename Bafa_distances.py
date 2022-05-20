@@ -23,3 +23,4 @@ if __name__ == '__main__':
     master_distance_df = pd.concat(master_dist,ignore_index=True)
     
     master_distance_df.to_csv('BAFA_D_2019_All.csv',header=True,index=False)
+    master_distance_df.to_pickle('BAFA_2029_D_All.pkl')
