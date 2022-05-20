@@ -110,7 +110,7 @@ def addres_finder(sop):
     
     return postcode, team_name
   
-def distance_crawler(pairs,postcodedf):
+def distance_crawler(pairs,postcodedf,name):
     
     team_home,team_away = pairs
 
@@ -119,7 +119,9 @@ def distance_crawler(pairs,postcodedf):
     p1 = postcodedf['PostCode'][postcodedf.Team_name.str.contains(team_home)].tolist()[0]
     p2 = postcodedf['PostCode'][postcodedf.Team_name.str.contains(team_away)].tolist()[0]
     print(f"D: {p1} --> {p2}")
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches',['enable-logging'])
+    driver = webdriver.Chrome(options=options)
     driver.get("http://www.postcode-distance.com/distance-between-postcodes")
     postcode1 = driver.find_element(By.XPATH,"//input[@id='zipcode1']")
     postcode1.send_keys(p1) 
@@ -147,7 +149,7 @@ def distance_crawler(pairs,postcodedf):
 
     driver.quit()
 
-    return pd.DataFrame.from_dict({'Teams':[pairs],'Road_km':km_road,'Bee_km':km_bee}) 
+    return pd.DataFrame.from_dict({'Teams':[pairs],'Road_km':km_road,'Bee_km':km_bee,'Division':name}) 
 
 def division_distance(name):
     df = pd.read_csv('BAFA_2019_%s.csv'%name,index_col=False)
@@ -155,9 +157,10 @@ def division_distance(name):
     teams = list(df['Home_Team'].unique())
     pairs = list(combinations(teams,2))
     master_dfs = []
+    print('='*20,f"Division: {name}",'='*20)
     for pair in pairs:
-        pairdf = distance_crawler(pair,postcode)
+        pairdf = distance_crawler(pair,postcode,name)
         master_dfs.append(pairdf)
     distance_df = pd.concat(master_dfs,ignore_index=True)
-    distance_df.to_csv("BAFA_2019_D_%s.csv"%name,header=True)
+    distance_df.to_csv("BAFA_2019_D_%s.csv"%name,header=True,index=False)
     print(f"Division {name} saved (processed)!")
