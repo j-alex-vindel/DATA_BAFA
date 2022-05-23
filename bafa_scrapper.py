@@ -160,3 +160,17 @@ def division_distance(name):
     distance_df = pd.concat(master_dfs,ignore_index=True)
     distance_df.to_csv("BAFA_2019_D_%s.csv"%name,header=True,index=False)
     print(f"Division {name} saved (processed)!")
+    
+def geolocation_scrapp(postcode):
+    base = 'https://api.getthedata.com/postcode/'
+    p1 = base+postcode
+    print(p1)
+    response = requests.get(p1)
+    p1 = response.json()
+    if p1['status'] == 'match':
+        latitude = p1['data']['latitude']
+        longitude = p1['data']['longitude']
+    else:
+        latitude = 'N/A'
+        longitude = 'N/A'
+    return (latitude,longitude)
