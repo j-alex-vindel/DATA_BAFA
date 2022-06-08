@@ -19,8 +19,8 @@ def filewriter(filename,key):
         if i not in indeces:
             print(f"game {i} -at {games['Home_Team'].loc[i]} -> {games.loc[i]['game_date']}")
             date = f"{games.loc[i]['game_date']}T{games.loc[i]['Game_Time']}:00"
-            lat =  f"{venues['Lat'].loc[venues.loc[venues['Team_name'] == games.loc[i]['Home_Team']].index[0]]}"
-            long = f"{venues['Long'].loc[venues.loc[venues['Team_name'] == games.loc[i]['Home_Team']].index[0]]}"
+            lat =  f"{venues['Lat'].loc[venues[venues.Team_name.str.contains(games.loc[i]['Home_Team'])].index[0]]}"
+            long = f"{venues['Long'].loc[venues[venues.Team_name.str.contains(games.loc[i]['Home_Team'])].index[0]]}"
             url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{lat},{long}/{date}?key={key}"
             response = requests.get(url)
             if response.status_code == 200:
